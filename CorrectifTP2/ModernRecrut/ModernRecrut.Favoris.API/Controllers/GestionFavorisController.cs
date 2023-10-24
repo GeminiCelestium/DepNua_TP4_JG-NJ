@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using ModernRecrut.Favoris.API.Helpers;
 using ModernRecrut.Favoris.API.Interfaces;
@@ -16,11 +17,13 @@ namespace ModernRecrut.Favoris.API.Controllers
 
         private readonly IUtilitaireService _utilitaireService;
 
+        private readonly IDistributedCache _distributedCache;
 
-        public GestionFavorisController(IMemoryCache memoryCache, IUtilitaireService utilitaireService)
+        public GestionFavorisController(IMemoryCache memoryCache, IUtilitaireService utilitaireService, IDistributedCache distributedCache)
         {
             _memoryCache = memoryCache;
             _utilitaireService = utilitaireService;
+            _distributedCache = distributedCache;
             _cacheKey = IpAdresse.GetIpAdress();
         }
 
@@ -36,6 +39,27 @@ namespace ModernRecrut.Favoris.API.Controllers
             else
             {
                 return NotFound();
+            }
+        }
+
+        public async Task CacheRedis()
+        {
+            //Obtention des données du cache
+            string cacheDatetime = await _distributedCache.GetStringAsync("cacheDateTime");
+
+            if (cacheDatetime == null)
+            {
+                cacheDatetime = DateTime.Now.ToString();
+
+                //Définition des options de configurations du stockage des données dans le cache
+                var options = new DistributedCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromSeconds(10),
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(120),
+                };
+
+                //Ajout des données dans le cache
+                _ = _distributedCache.SetStringAsync("cacheDateTime", cacheDatetime, options);
             }
         }
 

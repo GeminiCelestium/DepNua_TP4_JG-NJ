@@ -16,6 +16,11 @@ builder.Services.AddMemoryCache(options =>
 
 });
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
+});
+
 builder.Services.AddSingleton<IUtilitaireService, UtilitaireService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
