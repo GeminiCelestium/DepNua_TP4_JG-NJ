@@ -8,7 +8,7 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-  serviceConnection : 'sc-demo-devops'
+  serviceConnection : 'sc-tp4'
   artifactName: 'drop'
   devEnvironment: 'Dev'
   prodEnvironment: 'Prod'
@@ -18,19 +18,19 @@ parameters:
   type: object
   default: 
   - stage: DeployToDevPostulation
-    azapi: webapp-postulation-6so3gd2xurt4m
+    azapi: webapp-postulation-jbxa4yvpqs3k6
     apiname: Postulation
     displayName: Dev Déploiement API Postulation
   - stage: DeployToDevFavoris
-    azapi: webapp-favoris-6so3gd2xurt4m
+    azapi: webapp-favoris-jbxa4yvpqs3k6
     apiname: Favoris
     displayName: Dev Déploiement API Favoris
   - stage: DeployToDevDocuments
-    azapi: webapp-documents-6so3gd2xurt4m
+    azapi: webapp-documents-jbxa4yvpqs3k6
     apiname: Documents
     displayName: Dev Déploiement API Documents
   - stage: DeployToDevEmplois
-    azapi: webapp-emplois-6so3gd2xurt4m
+    azapi: webapp-emplois-jbxa4yvpqs3k6
     apiname: Emplois
     displayName: Dev Déploiement API Emplois
 
@@ -38,19 +38,19 @@ parameters:
   type: object
   default: 
   - stage: DeployToProdPostulation
-    azapi: webapp-postulation-6so3gd2xurt4m
+    azapi: webapp-postulation-jbxa4yvpqs3k6
     apiname: Postulation
     displayName: Prod Déploiement API Postulation
   - stage: DeployToProdFavoris
-    azapi: webapp-favoris-6so3gd2xurt4m
+    azapi: webapp-favoris-jbxa4yvpqs3k6
     apiname: Favoris
     displayName: Prod Déploiement API Favoris
   - stage: DeployToProdDocuments
-    azapi: webapp-documents-6so3gd2xurt4m
+    azapi: webapp-documents-jbxa4yvpqs3k6
     apiname: Documents
     displayName: Prod Déploiement API Documents
   - stage: DeployToProdEmplois
-    azapi: webapp-emplois-6so3gd2xurt4m
+    azapi: webapp-emplois-jbxa4yvpqs3k6
     apiname: Emplois
     displayName: Prod Déploiement API Emplois
 
@@ -91,7 +91,7 @@ stages:
       artifactName: $(artifactName)
       artifactAppName: 'MVC' 
       serviceConnection: $(serviceConnection)
-      webAppName: 'webapp-mvc-6so3gd2xurt4m'
+      webAppName: 'webapp-mvc-jbxa4yvpqs3k6'
 
 - ${{each stage in parameters.prodStages}}:
   - stage: ${{stage.stage}} 
