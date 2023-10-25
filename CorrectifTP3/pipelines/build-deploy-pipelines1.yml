@@ -120,4 +120,4 @@ stages:
       artifactName: $(artifactName)
       artifactAppName: 'MVC' 
       serviceConnection: $(serviceConnection)
-      webAppName: 'ClientMVC-6rsy4bhbxhztm'
+      webAppName: 'ClientMVC-jbxa4yvpqs3k6'
