@@ -1,0 +1,123 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- none
+
+variables:
+  buildConfiguration: 'Release'
+  serviceConnection : 'sc-tp4'
+  artifactName: 'drop'
+  devEnvironment: 'Dev'
+  prodEnvironment: 'Prod'
+
+parameters:
+- name: devStages
+  type: object
+  default: 
+  - stage: DeployToDevPostulation
+    azapi: webapp-postulation-6so3gd2xurt4m
+    apiname: Postulation
+    displayName: Dev Déploiement API Postulation
+  - stage: DeployToDevFavoris
+    azapi: webapp-favoris-6so3gd2xurt4m
+    apiname: Favoris
+    displayName: Dev Déploiement API Favoris
+  - stage: DeployToDevDocuments
+    azapi: webapp-documents-6so3gd2xurt4m
+    apiname: Documents
+    displayName: Dev Déploiement API Documents
+  - stage: DeployToDevEmplois
+    azapi: webapp-emplois-6so3gd2xurt4m
+    apiname: Emplois
+    displayName: Dev Déploiement API Emplois
+
+- name: prodStages
+  type: object
+  default: 
+  - stage: DeployToProdPostulation
+    azapi: webapp-postulation-6so3gd2xurt4m
+    apiname: Postulation
+    displayName: Prod Déploiement API Postulation
+  - stage: DeployToProdFavoris
+    azapi: webapp-favoris-6so3gd2xurt4m
+    apiname: Favoris
+    displayName: Prod Déploiement API Favoris
+  - stage: DeployToProdDocuments
+    azapi: webapp-documents-6so3gd2xurt4m
+    apiname: Documents
+    displayName: Prod Déploiement API Documents
+  - stage: DeployToProdEmplois
+    azapi: webapp-emplois-6so3gd2xurt4m
+    apiname: Emplois
+    displayName: Prod Déploiement API Emplois
+
+stages:
+- stage : 'Build' 
+  displayName: 'Build et execution des tests'
+  jobs:
+  - template: templates/build-template.yml
+    parameters:
+      buildConfiguration: $(buildConfiguration)
+      artifactName: $(artifactName)
+
+
+- ${{each stage in parameters.devStages}}:
+  - stage: ${{stage.stage}} 
+    displayName: ${{stage.displayName}} 
+    dependsOn: 'Build'
+    jobs:
+     - template: templates/deploy-template.yml
+       parameters:
+        environment: $(devEnvironment)
+        artifactName: $(artifactName)
+        artifactAppName: ${{stage.apiname}} 
+        serviceConnection: $(serviceConnection)
+        webAppName: ${{stage.azapi}} 
+
+- stage : 'DeployToDevMVC' 
+  displayName: 'Dev Déploiment MVC'
+  dependsOn: 
+      - 'DeployToDevPostulation'
+      - 'DeployToDevFavoris'
+      - 'DeployToDevDocuments'
+      - 'DeployToDevEmplois'
+  jobs:
+  - template: templates/deploy-template.yml
+    parameters:
+      environment: $(devEnvironment)
+      artifactName: $(artifactName)
+      artifactAppName: 'MVC' 
+      serviceConnection: $(serviceConnection)
+      webAppName: 'webapp-mvc-6so3gd2xurt4m'
+
+- ${{each stage in parameters.prodStages}}:
+  - stage: ${{stage.stage}} 
+    displayName: ${{stage.displayName}} 
+    dependsOn: 'DeployToDevMVC'
+    jobs:
+     - template: templates/deploy-template.yml
+       parameters:
+        environment: $(prodEnvironment)
+        artifactName: $(artifactName)
+        artifactAppName: ${{stage.apiname}} 
+        serviceConnection: $(serviceConnection)
+        webAppName: ${{stage.azapi}} 
+
+- stage : 'DeployToProdMVC' 
+  displayName: 'Prod Déploiment MVC'
+  dependsOn: 
+      - 'DeployToProdPostulation'
+      - 'DeployToProdFavoris'
+      - 'DeployToProdDocuments'
+      - 'DeployToProdEmplois'
+  jobs:
+  - template: templates/deploy-template.yml
+    parameters:
+      environment: $(prodEnvironment)
+      artifactName: $(artifactName)
+      artifactAppName: 'MVC' 
+      serviceConnection: $(serviceConnection)
+      webAppName: 'ClientMVC-6rsy4bhbxhztm'
