@@ -120,4 +120,5 @@ stages:
       artifactName: $(artifactName)
       artifactAppName: 'MVC' 
       serviceConnection: $(serviceConnection)
+      # Nom WebApp à changer
       webAppName: 'ClientMVC-jbxa4yvpqs3k6'
