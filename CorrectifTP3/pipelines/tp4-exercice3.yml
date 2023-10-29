@@ -11,9 +11,7 @@ pool:
   vmImage: 'ubuntu-latest'
 variables:
   ACRUsername: 'acrTP4jgnj'
-  ACRPassword:
-    value: 'a4MNNO//1/ec9UTsf29v01+StV0cDXU7BAQ0akXwdM+ACRA6YOUL'
-    isSecret: true
+  ACRPassword: 'a4MNNO//1/ec9UTsf29v01+StV0cDXU7BAQ0akXwdM+ACRA6YOUL'
   ACRName: 'acrTP4jgnj'
   ACRResourceGroup: 'rg-TP4-JG_NJ'
   APIName: 'Emplois-API'
