@@ -18,11 +18,11 @@ variables:
   ContainerImage: 'acrtp4jgnj.azurecr.io/modernrecrutemploisapi:latest'
   DNSLabel: 'emplois-api-depnuagtp4-jgnj'
 steps:
-- script: docker login -u $(ACRUsername) --password-stdin $(ACRPassword) monregistry.azurecr.io
+- script: echo $(ACRPassword) | docker login monregistry.azurecr.io -u $(ACRUsername) --password-stdin
   displayName: 'Docker Login'
   env:
     ACRUsername: $(ACRUsername)
-    ACRPassword: $(ACRPassword)
+
 - script: docker pull $(ContainerImage)
   displayName: 'Docker Pull'
 - script: az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 1.5Gi --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
