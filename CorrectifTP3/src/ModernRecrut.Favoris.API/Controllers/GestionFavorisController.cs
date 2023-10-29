@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using ModernRecrut.Favoris.API.Helpers;
 using ModernRecrut.Favoris.API.Interfaces;
 using ModernRecrut.Favoris.API.Models;
+using Newtonsoft.Json;
 
 namespace ModernRecrut.Favoris.API.Controllers
 {
@@ -11,7 +12,6 @@ namespace ModernRecrut.Favoris.API.Controllers
     [ApiController]
     public class GestionFavorisController : Controller
     {        
-        private readonly IMemoryCache? _memoryCache;
 
         private readonly IUtilitaireService _utilitaireService;
 
@@ -19,9 +19,8 @@ namespace ModernRecrut.Favoris.API.Controllers
 
         private string _cacheKey;
 
-        public GestionFavorisController(IMemoryCache memoryCache, IUtilitaireService utilitaireService, IDistributedCache distributedCache)
+        public GestionFavorisController(IUtilitaireService utilitaireService, IDistributedCache distributedCache)
         {
-            _memoryCache = memoryCache;
             _utilitaireService = utilitaireService;
             _distributedCache = distributedCache;
             _cacheKey = IpAdresse.GetIpAdress();
@@ -51,10 +50,12 @@ namespace ModernRecrut.Favoris.API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<OffreEmploi>>> ObtenirFavoris()
         {
-            //Verifie si l'information existe dans le cache
-            var cache = (OffreFavoris)_memoryCache.Get(_cacheKey);
-            if (cache != null)
+            // Verifies if the information exists in the cache
+            var cachedData = await _distributedCache.GetStringAsync(_cacheKey);
+
+            if (!string.IsNullOrEmpty(cachedData))
             {
+                var cache = JsonConvert.DeserializeObject<OffreFavoris>(cachedData);
                 return cache.Favoris.ToList();
             }
             else
@@ -63,7 +64,7 @@ namespace ModernRecrut.Favoris.API.Controllers
             }
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public async Task<ActionResult> Ajouter(OffreEmploi offreEmploi)
         {
             OffreFavoris offreFavoris = (OffreFavoris)_memoryCache.Get(_cacheKey);
@@ -97,8 +98,45 @@ namespace ModernRecrut.Favoris.API.Controllers
                 _memoryCache.Set(_cacheKey, offreFavoris, cacheEntryOptionsTotal);
                 return Ok();
             }
+        }*/
+
+        [HttpPost]
+        public async Task<ActionResult> Ajouter(OffreEmploi offreEmploi)
+        {
+            var cachedData = await _distributedCache.GetStringAsync(_cacheKey);
+            OffreFavoris offreFavoris;
+
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                offreFavoris = JsonConvert.DeserializeObject<OffreFavoris>(cachedData);
+            }
+            else
+            {
+                offreFavoris = new OffreFavoris();
+                offreFavoris.Favoris = new List<OffreEmploi>();
+            }
+
+            if (!offreFavoris.Favoris.Any(o => o.Id == offreEmploi.Id))
+            {
+                offreFavoris.Favoris.Add(offreEmploi);
+                int tailleTotal = _utilitaireService.ObtenirTailleListOffreEmploi(offreFavoris.Favoris);
+
+                var cacheEntryOptions = new DistributedCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromHours(6),
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+                };
+
+                await _distributedCache.SetStringAsync(_cacheKey, JsonConvert.SerializeObject(offreFavoris), cacheEntryOptions);
+                return Ok();
+            }
+            else
+            {
+                return Ok();
+            }
         }
-        [HttpDelete("{id}")]
+
+        /*[HttpDelete("{id}")]
         public async Task<ActionResult> Supprimer(int id)
         {
             OffreFavoris offreFavoris = (OffreFavoris)_memoryCache.Get(_cacheKey);
@@ -120,6 +158,34 @@ namespace ModernRecrut.Favoris.API.Controllers
             {
                 return BadRequest();
             }
+        }*/
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Supprimer(int id)
+        {
+            var cachedData = await _distributedCache.GetStringAsync(_cacheKey);
+
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                OffreFavoris offreFavoris = JsonConvert.DeserializeObject<OffreFavoris>(cachedData);
+
+                if (offreFavoris.Favoris.Any(o => o.Id == id))
+                {
+                    var offreAEnlever = offreFavoris.Favoris.FirstOrDefault(o => o.Id == id);
+                    offreFavoris.Favoris.Remove(offreAEnlever);
+                    int tailleTotal = _utilitaireService.ObtenirTailleListOffreEmploi(offreFavoris.Favoris);
+
+                    var cacheEntryOptions = new DistributedCacheEntryOptions
+                    {
+                        SlidingExpiration = TimeSpan.FromHours(6),
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+                    };
+
+                    await _distributedCache.SetStringAsync(_cacheKey, JsonConvert.SerializeObject(offreFavoris), cacheEntryOptions);
+                    return Ok();
+                }
+            }
+
+            return BadRequest();
         }
     }
 }

@@ -1,12 +1,12 @@
 param location string = resourceGroup().location
-param serverName string = 'modernrecrut120'
+param serverName string = 'modernrecrut120tp4'
 
 param dbUser string = 'ModernRecrutAdmin'
 @minLength(10)
 @maxLength(20)
 @secure()
 param dbPassword string
-param storageAccountName string = 'stdocuments120'
+param storageAccountName string = 'stdocuments120tp4'
 param containerName string = 'images'
 
 var AppSpecs =[
