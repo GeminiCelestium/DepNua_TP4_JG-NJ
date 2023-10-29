@@ -11,18 +11,18 @@ pool:
   vmImage: 'ubuntu-latest'
 variables:
   ACRUsername: 'acrTP4jgnj'
-  ACRPassword: 'a4MNNO//1/ec9UTsf29v01+StV0cDXU7BAQ0akXwdM+ACRA6YOUL'
+  ACRPassword: 'Dju95aZWDJNERaJnpH6Tn4MDjKdLLSHtPQLT8iLypd+ACRCEjREI'
   ACRName: 'acrTP4jgnj'
   ACRResourceGroup: 'rg-TP4-JG_NJ'
   APIName: 'Emplois-API'
   ContainerImage: 'acrtp4jgnj.azurecr.io/modernrecrutemploisapi:latest'
   DNSLabel: 'emplois-api-depnuagtp4-jgnj'
 steps:
-- script: echo $(ACRPassword) | docker login monregistry.azurecr.io -u $(ACRUsername) --password-stdin
+- script: docker login -u $(ACRUsername) --password-stdin $(ACRPassword) monregistry.azurecr.io
   displayName: 'Docker Login'
   env:
     ACRUsername: $(ACRUsername)
-
+    ACRPassword: $(ACRPassword)
 - script: docker pull $(ContainerImage)
   displayName: 'Docker Pull'
 - script: az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 1.5Gi --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
