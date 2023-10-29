@@ -1,0 +1,32 @@
+
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  - main
+pr: none
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  ACRUsername: 'acrTP4jgnj'
+  ACRPassword: 'a4MNNO//1/ec9UTsf29v01+StV0cDXU7BAQ0akXwdM+ACRA6YOUL'
+  ACRName: 'acrTP4jgnj'
+  ACRResourceGroup: 'rg-TP4-JG_NJ'
+  APIName: 'Emplois-API'
+  ContainerImage: 'acrtp4jgnj.azurecr.io/modernrecrutemploisapi:latest'
+  DNSLabel: 'emplois-api-depnuagtp4-jgnj'
+steps:
+- script: docker login -u $(ACRUsername) -p $(ACRPassword) monregistry.azurecr.io
+  displayName: 'Docker Login'
+  env:
+    ACRUsername: $(ACRUsername)
+    ACRPassword: $(ACRPassword)
+- script: docker pull $(ContainerImage)
+  displayName: 'Docker Pull'
+- script: az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 1.5Gi --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
+  displayName: 'Create Azure Container Instance'
+  env:
+    ACRUsername: $(ACRUsername)
+    ACRPassword: $(ACRPassword)
