@@ -22,7 +22,7 @@ variables:
   DNSLabel: 'emplois-api-depnuagtp4-jgnj'
 
 steps:
-- script: docker login -u $(ACRUsername) --password-stdin $(ACRPassword) acrtp4jgnj.azurecr.io
+- script: docker login -username $(ACRUsername) --password-stdin $(ACRPassword) acrtp4jgnj.azurecr.io
   displayName: 'Docker Login'
   env:
     ACRUsername: $(ACRUsername)
