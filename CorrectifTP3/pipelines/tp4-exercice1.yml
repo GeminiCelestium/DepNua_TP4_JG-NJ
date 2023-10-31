@@ -4,14 +4,49 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+  paths:
+    include:
+    - 'CorrectifTP3/src/FuncTP4ex1/*'
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
-variables:
-  buildConfiguration: 'Release'
+jobs:
+- job: BuildAndPublish
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      installationPath: $(Agent.ToolsDirectory)
+      installationVersion: '3.x'
 
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  - script: dotnet build CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj
+    displayName: 'Build the application'
+
+  - script: dotnet publish CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj --configuration Release --output $(Build.ArtifactStagingDirectory)
+    displayName: 'Publish the application'
+
+- job: DeployFunctionPostDocument
+  dependsOn: BuildAndPublish
+  steps:
+  
+
+  - task: AzureFunctionApp@1
+    inputs:
+      azureSubscription: 'sc-tp4-jgnj'
+      appType: 'functionApp'
+      appName: 'FuncPostDocument'
+      package: $(Build.ArtifactStagingDirectory)
+
+- job: DeployFunctionGetURLsFichiers
+  dependsOn: BuildAndPublish
+  steps:
+  
+
+  - task: AzureFunctionApp@1
+    inputs:
+      azureSubscription: 'sc-tp4-jgnj'
+      appType: 'functionApp'
+      appName: 'FuncGetURLFichier'
+      package: $(Build.ArtifactStagingDirectory)
+
