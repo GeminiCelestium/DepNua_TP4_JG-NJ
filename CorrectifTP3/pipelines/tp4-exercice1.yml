@@ -23,7 +23,7 @@ jobs:
   - script: dotnet build CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj
     displayName: 'Build the application'
 
-  - script: dotnet publish --configuration Release --output $(Build.ArtifactStagingDirectory)
+  - script: dotnet publish CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj --configuration Release --output $(Build.ArtifactStagingDirectory)
     displayName: 'Publish the application'
 
 - job: DeployFunction1
