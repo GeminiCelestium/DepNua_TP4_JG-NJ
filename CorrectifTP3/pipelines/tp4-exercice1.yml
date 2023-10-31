@@ -26,37 +26,27 @@ jobs:
   - script: dotnet publish CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj --configuration Release --output $(Build.ArtifactStagingDirectory)
     displayName: 'Publish the application'
 
-- job: DeployFunction1
+- job: DeployFunctionPostDocument
   dependsOn: BuildAndPublish
   steps:
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/function1.zip
+  
 
   - task: AzureFunctionApp@1
     inputs:
       azureSubscription: 'sc-tp4-jgnj'
       appType: 'functionApp'
       appName: 'FuncPostDocument'
-      package: $(Build.ArtifactStagingDirectory)/function1.zip
+      package: $(Build.ArtifactStagingDirectory)
 
-- job: DeployFunction2
+- job: DeployFunctionGetURLsFichiers
   dependsOn: BuildAndPublish
   steps:
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: $(Build.ArtifactStagingDirectory)/function2.zip
+  
 
   - task: AzureFunctionApp@1
     inputs:
       azureSubscription: 'sc-tp4-jgnj'
       appType: 'functionApp'
       appName: 'FuncGetURLFichier'
-      package: $(Build.ArtifactStagingDirectory)/function2.zip
+      package: $(Build.ArtifactStagingDirectory)
 
