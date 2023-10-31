@@ -15,7 +15,7 @@ namespace FuncTP4ex1
     {
         private static readonly IGenererNom _genererNom;
 
-        [Function("FileUpload")]
+        [Function("FuncPostDocument")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger log)
         {
