@@ -21,18 +21,26 @@ variables:
   ContainerImage: 'acrtp4jgnj.azurecr.io/modernrecrutemploisapi:latest'
   DNSLabel: 'emplois-api-depnuagtp4-jgnj'
 
-steps:
-- script: docker login -username $(ACRUsername) --password-stdin $(ACRPassword) acrtp4jgnj.azurecr.io
-  displayName: 'Docker Login'
-  env:
-    ACRUsername: $(ACRUsername)
-    ACRPassword: $(ACRPassword)
+jobs:
+- job: BuildAndDeploy
+  steps:
+  - task: Docker@2
+    displayName: 'Docker Login'
+    inputs:
+      command: 'login'
+      containerRegistry: 'acrtp4jgnj.azurecr.io'
+      username: $(ACRUsername)
+      password: $(ACRPassword)
 
-- script: docker pull $(ContainerImage)
-  displayName: 'Docker Pull'
-  
-- script: az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 1.5Gi --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
-  displayName: 'Create Azure Container Instance'
-  env:
-    ACRUsername: $(ACRUsername)
-    ACRPassword: $(ACRPassword)
+  - task: Docker@2
+    displayName: 'Docker Pull'
+    inputs:
+      command: 'pull'
+      containerRegistry: 'acrtp4jgnj.azurecr.io'
+      repository: 'modernrecrutemploisapi'
+      tag: 'latest'
+
+  - script: |
+      az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 1.5Gi --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
+    displayName: 'Create Azure Container Instance'
+
