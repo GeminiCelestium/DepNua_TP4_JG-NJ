@@ -15,7 +15,7 @@ namespace FuncTP4ex1
             _logger = loggerFactory.CreateLogger<FuncGetURLFichier>();
         }
 
-        [Function("Function1")]
+        [Function("FuncGetURLFichier")]
         public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
