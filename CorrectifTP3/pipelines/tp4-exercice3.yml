@@ -35,7 +35,7 @@ jobs:
     displayName: 'Docker Pull'
     inputs:
       command: 'pull'
-      containerRegistry: 'sc-dr-tp4-jgnj'
+      containerRegistry: 'acremploistp4.azurecr.io'
       repository: 'modernrecrutemploisapi'
       tag: 'latest'
 
