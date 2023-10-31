@@ -38,7 +38,7 @@ jobs:
 
   - task: AzureFunctionApp@1
     inputs:
-      azureSubscription: 'Azure for Students'
+      azureSubscription: 'sc-tp4-jgnj'
       appType: 'functionApp'
       appName: 'FuncPostDocument'
       package: $(Build.ArtifactStagingDirectory)/function1.zip
@@ -55,7 +55,7 @@ jobs:
 
   - task: AzureFunctionApp@1
     inputs:
-      azureSubscription: 'Azure for Students'
+      azureSubscription: 'sc-tp4-jgnj'
       appType: 'functionApp'
       appName: 'FuncGetURLFichier'
       package: $(Build.ArtifactStagingDirectory)/function2.zip
