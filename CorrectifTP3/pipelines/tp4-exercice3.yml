@@ -27,7 +27,7 @@ jobs:
     displayName: 'Docker Login'
     inputs:
       command: 'login'
-      containerRegistry: 'acremploistp4.azurecr.io'
+      containerRegistry: 'sc-tp4-jgnj'
       username: $(ACRUsername)
       password: $(ACRPassword)
 
@@ -35,7 +35,7 @@ jobs:
     displayName: 'Docker Pull'
     inputs:
       command: 'pull'
-      containerRegistry: 'acremploistp4.azurecr.io'
+      containerRegistry: 'sc-tp4-jgnj'
       repository: 'modernrecrutemploisapi'
       tag: 'latest'
 
