@@ -35,7 +35,7 @@ jobs:
     inputs:
       azureSubscription: 'sc-tp4-jgnj'
       appType: 'functionApp'
-      appName: 'FuncPostDocument'
+      appName: 'funcappTp4'
       package: $(Build.ArtifactStagingDirectory)
 
 - job: DeployFunctionGetURLsFichiers
@@ -47,6 +47,6 @@ jobs:
     inputs:
       azureSubscription: 'sc-tp4-jgnj'
       appType: 'functionApp'
-      appName: 'FuncGetURLFichier'
+      appName: 'funcappTp4'
       package: $(Build.ArtifactStagingDirectory)
 
