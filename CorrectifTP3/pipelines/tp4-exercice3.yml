@@ -29,13 +29,11 @@ jobs:
       command: 'login'
       containerRegistry: 'sc-dr-tp4-jgnj'
       username: $(ACRUsername)
-      password: $(ACRPassword)
-
-  
+      password: $(ACRPassword)  
 
   - script: docker pull $(ContainerImage)
     displayName: 'Docker Pull'    
 
   - script: |
-      az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 1.5Gi --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
+      az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 2 --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
     displayName: 'Create Azure Container Instance'
