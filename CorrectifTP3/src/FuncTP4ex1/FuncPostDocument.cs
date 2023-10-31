@@ -7,6 +7,7 @@ using Microsoft.Azure.Functions.Worker;
 using ModernRecrut.Documents.API.Interfaces;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker.Http;
 
 namespace FuncTP4ex1
 {
@@ -14,22 +15,25 @@ namespace FuncTP4ex1
     public class FuncPostDocument
     {
         private static readonly IGenererNom _genererNom;
+        private readonly ILogger _logger;
 
-        [Function("FuncPostDocument")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req, ILogger log)
+        public FuncPostDocument(ILoggerFactory loggerFactory)
         {
-            string Connection = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-            string containerName = Environment.GetEnvironmentVariable("acremploistp4");
-            Stream myBlob = new MemoryStream();
-            var file = req.Form.Files["File"];
-            myBlob = file.OpenReadStream();
-            var blobClient = new BlobContainerClient(Connection, containerName);
-            var blob = blobClient.GetBlobClient(file.FileName);
-            await blob.UploadAsync(myBlob);
-            return new OkObjectResult("file uploaded successfylly");
+            _logger = loggerFactory.CreateLogger<FuncPostDocument>();
         }
 
+        [Function("FuncPostDocument")]
+        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
+        {
+            _logger.LogInformation("C# HTTP trigger function processed a request.");
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+            response.WriteString("Welcome to Azure Functions!");
+
+            return response;
+        }
     }
 }
 
