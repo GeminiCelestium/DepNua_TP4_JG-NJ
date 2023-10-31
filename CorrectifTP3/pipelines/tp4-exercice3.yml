@@ -16,7 +16,7 @@ variables:
   ACRPassword: 'j9DdcGcuSxIrKAQuepNJjWXUl7HM/GJKtkH/heiCYy+ACRCuy5uj'
   ACRName: 'acremploistp4'
   ACRResourceGroup: 'rg-TP4-DevInfo'
-  APIName: 'Emplois-API'
+  APIName: 'emplois-api'
   ContainerImage: 'acremploistp4.azurecr.io/modernrecrutemploisapi:latest'
   DNSLabel: 'emplois-api-depnuagtp4-jgnj'
 
