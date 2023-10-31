@@ -35,6 +35,6 @@ jobs:
     displayName: 'Docker Pull'    
 
   - script: |
-      az login
+      az login --service-principal --username 1843085@cegeplimoilou.ca --tenant 1605ff27-7b8c-4c88-8e77-5f1e3c837875
       az container create --resource-group $(ACRResourceGroup) --name $(APIName) --image $(ContainerImage) --cpu 0.75 --memory 2 --registry-username $(ACRUsername) --registry-password $(ACRPassword) --dns-name-label $(DNSLabel) --ports 80
     displayName: 'Create Azure Container Instance'
