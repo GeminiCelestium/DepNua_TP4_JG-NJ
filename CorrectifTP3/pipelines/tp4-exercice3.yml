@@ -1,0 +1,68 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+ 
+variables:
+  serviceConnection : 'sc-tp4-jgnj'
+  location: 'canadacentral'
+  templateFile: '**/main.bicep'
+ 
+
+stages:
+- stage : 'DeployDevInfra'
+  displayName: 'Déploiement IAC en DEV'
+  jobs:
+  - deployment : 'DeployInfra'
+    pool: 
+      vmImage: 'ubuntu-latest'
+    variables:
+      rgDev: 'rg-tp3-devops-dev'
+      pwdDev: $(SECRETPWDDEV)
+      serverNameDev: 'srvmdrecrut12dev'
+      storageNameDev: 'stdocuments12dev'
+    environment: 'Dev'
+    strategy:
+        runOnce:
+         deploy:
+           steps:
+           - checkout: self  
+           - task: AzureCLI@2
+             inputs:
+              azureSubscription: $(serviceConnection) 
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az group create --name $(rgDev) --location $(location)
+                az deployment group create --resource-group $(rgDev) --template-file $(templateFile) --parameters dbPassword=$(pwdDev) serverName=$(serverNameDev) storageAccountName=$(storageNameDev)
+
+- stage : 'DeployProdInfra'
+  displayName: 'Déploiement IAC en PROD'
+  dependsOn: 'DeployDevInfra'
+  jobs:
+  - deployment : 'DeployInfra'
+    pool: 
+      vmImage: 'ubuntu-latest'
+    variables:
+      rgProd: 'rg-tp3-devops-prod'
+      pwdProd: $(SECRETPWDPROD)
+      serverNameProd: 'srvmdrecrut12prod'
+      storageNameProd: 'stdocuments12prod'
+    environment: 'Prod'
+    strategy:
+        runOnce:
+         deploy:
+           steps:
+           - checkout: self  
+           - task: AzureCLI@2
+             inputs:
+               azureSubscription: $(serviceConnection) 
+               scriptType: 'bash'
+               scriptLocation: 'inlineScript'
+               inlineScript: |
+                 az group create --name $(rgDev) --location $(location)
+                 az deployment group create --resource-group $(rgDev) --template-file $(templateFile) --parameters dbPassword=$(pwdDev) serverName=$(serverNameDev) storageAccountName=$(storageNameDev)
