@@ -5,11 +5,14 @@
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <UserSecretsId>fff0f498-5083-40be-9f8d-f4fa98f8b4ca</UserSecretsId>    
+    <UserSecretsId>fff0f498-5083-40be-9f8d-f4fa98f8b4ca</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/3af0c872-7c0d-4541-be47-9082939ecf05/resourceGroups/rg-TP4-DevInfo/providers/microsoft.insights/components/funcappTp4-appinsights</ApplicationInsightsResourceId>    
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.PerfCounterCollector" Version="2.21.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" />
