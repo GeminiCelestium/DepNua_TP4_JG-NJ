@@ -41,43 +41,7 @@ namespace ModernRecrut.Favoris.API.Controllers
             {
                 return NotFound();
             }
-        }
-
-        /*[HttpPost]
-        public async Task<ActionResult> Ajouter(OffreEmploi offreEmploi)
-        {
-            OffreFavoris offreFavoris = (OffreFavoris)_memoryCache.Get(_cacheKey);
-            if (offreFavoris != null && !offreFavoris.Favoris.Any(o => o.Id == offreEmploi.Id))
-            {
-                offreFavoris.Favoris.Add(offreEmploi);
-                int tailleTotal = _utilitaireService.ObtenirTailleListOffreEmploi(offreFavoris.Favoris);
-                var cacheEntryOptionsTotal = new MemoryCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(6),
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24),
-                    Size = tailleTotal
-                };
-                _memoryCache.Set(_cacheKey, offreFavoris, cacheEntryOptionsTotal);
-                return Ok();
-            }
-            else
-            {
-                offreFavoris = new OffreFavoris();
-                offreFavoris.Favoris = new List<OffreEmploi>
-                {
-                    offreEmploi
-                };
-                int tailleTotal = _utilitaireService.ObtenirTailleListOffreEmploi(offreFavoris.Favoris);
-                var cacheEntryOptionsTotal = new MemoryCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(6),
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24),
-                    Size = tailleTotal
-                };
-                _memoryCache.Set(_cacheKey, offreFavoris, cacheEntryOptionsTotal);
-                return Ok();
-            }
-        }*/
+        }   
 
         [HttpPost]
         public async Task<ActionResult> Ajouter(OffreEmploi offreEmploi)
@@ -115,29 +79,6 @@ namespace ModernRecrut.Favoris.API.Controllers
             }
         }
 
-        /*[HttpDelete("{id}")]
-        public async Task<ActionResult> Supprimer(int id)
-        {
-            OffreFavoris offreFavoris = (OffreFavoris)_memoryCache.Get(_cacheKey);
-            if (offreFavoris != null && offreFavoris.Favoris.Any(o => o.Id == id))
-            {
-                var offreAEnlever = offreFavoris.Favoris.FirstOrDefault(o => o.Id == id);
-                offreFavoris.Favoris.Remove(offreAEnlever);
-                int tailleTotal = _utilitaireService.ObtenirTailleListOffreEmploi(offreFavoris.Favoris);
-                var cacheEntryOptionsTotal = new MemoryCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(6),
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24),
-                    Size = tailleTotal
-                };
-                _memoryCache.Set(_cacheKey, offreFavoris, cacheEntryOptionsTotal);
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }*/
         [HttpDelete("{id}")]
         public async Task<ActionResult> Supprimer(int id)
         {

@@ -1,39 +1,61 @@
+using System;
 using System.IO;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Azure.Functions.Worker;
 using ModernRecrut.Documents.API.Interfaces;
 using Azure.Storage.Blobs;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using ModernRecrut.Documents.API.Models;
 
-namespace FuncTP4ex1
+public class FuncPostDocument
 {
-
-    public class FuncPostDocument
+    private readonly IGenererNom _genererNom;
+    private readonly BlobServiceClient _blobServiceClient;
+    private readonly IConfiguration _config;
+    public FuncPostDocument(BlobServiceClient blobClient, IConfiguration config, IGenererNom genererNom)
     {
-        private static readonly IGenererNom _genererNom;
-        private readonly ILogger _logger;
-
-        public FuncPostDocument(ILoggerFactory loggerFactory)
-        {
-            _logger = loggerFactory.CreateLogger<FuncPostDocument>();
-        }
-
-        [Function("FuncPostDocument")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
-        {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-            response.WriteString("Welcome to Azure Functions!");
-
-            return response;
-        }
+        _blobServiceClient = blobClient;
+        _config = config;
+        _genererNom = genererNom;
     }
-}
 
+    public string GenererNomFichier(string codeUtilisateur, string typeDocument, string fileName)
+    {
+        //On genere un numéro aléatoire
+        string numAleatoire = Guid.NewGuid().ToString();
+
+        string extention = Path.GetExtension(fileName);
+        // on prepare le nouveau nom du fichier 
+        return codeUtilisateur + "_" + typeDocument + "_" + numAleatoire + $"{extention}";
+    }
+
+    /*[FunctionName("EnregistrementDocument")]
+    public async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "enregistrer-document")] HttpRequestData req,ILogger log)
+    {
+        string nomFichier = _genererNom.GenererNomFichier(Fichier.Id, fichier.TypeDocument.ToString(), fichier.FileName);
+
+        var conteneur = _config.GetSection("StorageAccount").GetValue<string>("ConteneurDocuments");
+
+        byte[] bytes = Convert.FromBase64String(fichier.DataFile);
+        MemoryStream stream = new MemoryStream(bytes);
+
+        IFormFile file = new FormFile(stream, 0, bytes.Length, fichier.Name, fichier.FileName);
+
+        var blob = file.OpenReadStream();
+
+        //Obtention d'un conteneur
+        var containerClient = _blobServiceClient.GetBlobContainerClient(conteneur);
+
+
+        BlobClient blobClient = containerClient.GetBlobClient(nomFichier);
+
+
+        await blobClient.UploadAsync(blob, true);
+
+    }*/
+}
