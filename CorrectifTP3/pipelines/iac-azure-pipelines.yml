@@ -23,8 +23,8 @@ stages:
     variables:
       rgDev: 'rg-tp3-devops-dev'
       pwdDev: $(SECRETPWDDEV)
-      serverNameDev: 'srvmdrecrut12dev'
-      storageNameDev: 'stdocuments12dev'
+      serverNameDev: 'stdocuments120tp4'
+      storageNameDev: 'stdocuments120tp4'
     environment: 'Dev'
     strategy:
         runOnce:
@@ -50,8 +50,8 @@ stages:
     variables:
       rgProd: 'rg-tp3-devops-prod'
       pwdProd: $(SECRETPWDPROD)
-      serverNameProd: 'srvmdrecrut12prod'
-      storageNameProd: 'stdocuments12prod'
+      serverNameProd: 'stdocuments120tp4'
+      storageNameProd: 'stdocuments120tp4'
     environment: 'Prod'
     strategy:
         runOnce:
