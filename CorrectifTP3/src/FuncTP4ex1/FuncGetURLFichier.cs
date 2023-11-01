@@ -23,7 +23,7 @@ namespace FuncTP4ex1
             _blobServiceClient = blobClient;
 
         }
-
+        //teset
         [Function("FuncGetURLFichier")]
         public async Task<IEnumerable<string>> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "FuncGetURLFichier")] HttpRequestData req,string idUtilisateur)
         {
