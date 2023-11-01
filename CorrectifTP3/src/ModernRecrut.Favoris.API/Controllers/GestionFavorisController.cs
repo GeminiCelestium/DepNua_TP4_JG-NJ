@@ -29,7 +29,6 @@ namespace ModernRecrut.Favoris.API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<OffreEmploi>>> ObtenirFavoris()
         {
-            // Verifies if the information exists in the cache
             var cachedData = await _distributedCache.GetStringAsync(_cacheKey);
 
             if (!string.IsNullOrEmpty(cachedData))
