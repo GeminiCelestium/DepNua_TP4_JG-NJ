@@ -1,52 +1,86 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+# .NET Core Function App to Windows on Azure
+# Build a .NET Core function app and deploy it to Azure as a Windows function App.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
   paths:
     include:
     - 'CorrectifTP3/src/FuncTP4ex1/*'
 
-pool:
-  vmImage: 'ubuntu-latest'
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: '43b2c20a-f8b9-4fd4-8869-edcc0815a412'
 
-jobs:
-- job: BuildAndPublish
-  steps:
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'sdk'
-      installationPath: $(Agent.ToolsDirectory)
-      installationVersion: '3.x'
+  # Function app name
+  functionAppName: 'funcappTp4'
 
-  - script: dotnet build CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj
-    displayName: 'Build the application'
+  # Agent VM image name
+  vmImageName: 'windows-2019'
 
-  - script: dotnet publish CorrectifTP3/src/FuncTP4ex1/FuncTP4ex1.csproj --configuration Release --output $(Build.ArtifactStagingDirectory)
-    displayName: 'Publish the application'
+  # Working Directory
+  workingDirectory: '$(System.DefaultWorkingDirectory)/CorrectifTP3/src/FuncTP4ex1'
 
-- job: DeployFunctionPostDocument
-  dependsOn: BuildAndPublish
-  steps:
-  
+stages:
+- stage: Build
+  displayName: Build stage
 
-  - task: AzureFunctionApp@1
-    inputs:
-      azureSubscription: 'sc-tp4-jgnj'
-      appType: 'functionApp'
-      appName: 'funcappTp4'
-      package: $(Build.ArtifactStagingDirectory)
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
 
-- job: DeployFunctionGetURLsFichiers
-  dependsOn: BuildAndPublish
-  steps:
-  
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: |
+          $(workingDirectory)/*.csproj
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
-  - task: AzureFunctionApp@1
-    inputs:
-      azureSubscription: 'sc-tp4-jgnj'
-      appType: 'functionApp'
-      appName: 'funcappTp4'
-      package: $(Build.ArtifactStagingDirectory)
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
 
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'development'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Fonction Post Document'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionApp
+              appName: $(functionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+            
+          - task: AzureFunctionApp@1
+            displayName: 'Fonction Get URLs Fichiers'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: functionApp
+              appName: $(functionAppName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
