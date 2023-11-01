@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModernRecrut.Documents.API\ModernRecrut.Documents.API.csproj" />
+    <ProjectReference Include="..\ModernRecrut.MVC\ModernRecrut.MVC.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
