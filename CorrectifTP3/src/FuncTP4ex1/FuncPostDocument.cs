@@ -33,11 +33,10 @@ public class FuncPostDocument
         return codeUtilisateur + "_" + typeDocument + "_" + numAleatoire + $"{extention}";
     }
 
-    /*[FunctionName("EnregistrementDocument")]
-    public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "enregistrer-document")] HttpRequestData req,ILogger log)
+    [Function("FuncPostDocument")]
+    public async Task Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "FuncPostDocument")] HttpRequestData req, Fichier fichier)
     {
-        string nomFichier = _genererNom.GenererNomFichier(Fichier.Id, fichier.TypeDocument.ToString(), fichier.FileName);
+        string nomFichier = _genererNom.GenererNomFichier(fichier.Id, fichier.TypeDocument.ToString(), fichier.FileName);
 
         var conteneur = _config.GetSection("StorageAccount").GetValue<string>("ConteneurDocuments");
 
@@ -57,5 +56,5 @@ public class FuncPostDocument
 
         await blobClient.UploadAsync(blob, true);
 
-    }*/
+    }
 }
