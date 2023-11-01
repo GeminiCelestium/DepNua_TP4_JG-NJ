@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using ModernRecrut.Documents.API.Models;
+using System.Text.Json;
 
 public class FuncPostDocument
 {
@@ -34,8 +35,11 @@ public class FuncPostDocument
     }
 
     [Function("FuncPostDocument")]
-    public async Task Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "FuncPostDocument")] HttpRequestData req, Fichier fichier)
+    public async Task Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "FuncPostDocument")] HttpRequestData req)
     {
+        string requestBody = await req.ReadAsStringAsync();
+        Fichier fichier = JsonSerializer.Deserialize<Fichier>(requestBody);
+
         string nomFichier = _genererNom.GenererNomFichier(fichier.Id, fichier.TypeDocument.ToString(), fichier.FileName);
 
         var conteneur = _config.GetSection("StorageAccount").GetValue<string>("ConteneurDocuments");
@@ -47,14 +51,12 @@ public class FuncPostDocument
 
         var blob = file.OpenReadStream();
 
-        //Obtention d'un conteneur
+        // Obtain a container
         var containerClient = _blobServiceClient.GetBlobContainerClient(conteneur);
-
 
         BlobClient blobClient = containerClient.GetBlobClient(nomFichier);
 
-
         await blobClient.UploadAsync(blob, true);
-
     }
+
 }
